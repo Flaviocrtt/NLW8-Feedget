@@ -61,7 +61,7 @@ export function WidgetForm(){
             </>)
             }
             <footer className='text-xs neutral-400'>
-                Feito com carinho na NLW8
+                Feito com ♡ por Flávio Ceratti
             </footer>
         </div>
     </div>
