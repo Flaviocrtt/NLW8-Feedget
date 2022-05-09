@@ -1,7 +1,9 @@
 import { ArrowLeft, Camera } from "phosphor-react";
 import { FormEvent, useState } from "react";
 import { FeedbackType, feedbackTypes } from "..";
+import { api } from "../../../services/api";
 import { CloseButton } from "../../CloseButton";
+import { Loading } from "../../Loading";
 import { ScreenShotButton } from "../ScreenShotButton";
 
 interface FeedbackTypeStepProps{
@@ -14,10 +16,18 @@ export function FeedbackContentStep({feedbackType, onFeedbackRestartRequest, onF
 
     const [screenshot, setScreenshot] = useState<string | null>(null);
     const [comment, setComment] = useState<string>('')
+    const [isSendingFeedback, setIsSendingFeedback] = useState(false)
 
-    function handleFeedbackSubmit(event: FormEvent){
+    async function handleFeedbackSubmit(event: FormEvent){
+        setIsSendingFeedback(true)
         event.preventDefault();
-        console.log(comment, screenshot);
+        
+        await api.post("/feedbacks", {
+            type: feedbackType,
+            comment,
+            screenshot
+        })
+        setIsSendingFeedback(false)
         onFeedbackSent();
     }
 
@@ -42,11 +52,11 @@ export function FeedbackContentStep({feedbackType, onFeedbackRestartRequest, onF
         <footer className="flex gap-2 mt-2 w-full pb-4">
             <ScreenShotButton onScreenshotTook={setScreenshot} screenshot={screenshot}/>
             <button 
-                disabled={comment.length===0}
+                disabled={comment.length===0 || isSendingFeedback}
                 onClick={handleFeedbackSubmit}
                 type="submit" 
                 className="p-2 bg-brand-500 rounded-md border-transparent flex-1 flex justify-center items-center text-sm hover:bg-brand-300 focus:outline-none focus:ring-2 focus:ring-offset-2 focus: ring-offset-zinc-900 focus:ring-brand-500 transition-colors disabled:opacity-50 disabled:hover:bg-brand-500"
-            >Enviar</button>
+            >{isSendingFeedback? <Loading/> : "Enviar Feedback"}</button>
         </footer>
     </>)
 }
