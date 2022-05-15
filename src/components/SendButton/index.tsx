@@ -6,10 +6,12 @@ import { styles } from './styles';
 
 interface SendButtonProps{
     isLoading: boolean;
+    sendFeedback: () => void;
 }
-export function SendButton({ isLoading, ...rest }: SendButtonProps) {
+export function SendButton({ isLoading, sendFeedback, ...rest }: SendButtonProps) {
   return (
     <TouchableOpacity 
+    onPress={sendFeedback}
     style={styles.container}
     {...rest}
     >

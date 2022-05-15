@@ -3,10 +3,14 @@ import { View, Text} from 'react-native';
 import { feedbackTypes } from '../../utils/feedbackTypes';
 import { Copyright } from '../Copyright';
 import { Option } from '../Option';
-
+import { FeedbackType } from '../Widgets'
 import { styles } from './styles';
 
-export function Options() {
+interface OptionsProps{
+  onFeedbackTypeChanged: (feedbackTypeSelected: FeedbackType) => void;
+}
+
+export function Options({onFeedbackTypeChanged} : OptionsProps) {
   return (
     <View style={styles.container}>
 
@@ -20,6 +24,7 @@ export function Options() {
             key={key}
             image={value.image}
             title={value.title}
+            onPress={() => onFeedbackTypeChanged(key as FeedbackType)}
           />
         ))
 }

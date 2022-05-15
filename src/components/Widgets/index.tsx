@@ -1,4 +1,4 @@
-import React, {useRef} from 'react';
+import React, {useRef, useState} from 'react';
 import BottomSheet from '@gorhom/bottom-sheet';
 import { ChatTeardropDots } from 'phosphor-react-native';
 import { TouchableOpacity, View } from 'react-native';
@@ -14,36 +14,65 @@ import { Success } from '../Success';
 export type FeedbackType = keyof typeof feedbackTypes; 
 
 function Widgets() {
-  const bottomSheetRef = useRef <BottomSheet>(null);
 
-  function handleOpen(){
-    bottomSheetRef.current?.expand();
-  }
-  return (
-    <>
-      <TouchableOpacity 
-        style={styles.button}
-        onPress={handleOpen}
-      >
-        <ChatTeardropDots 
-        size={24} 
-        weight="bold" 
-        color={theme.colors.text_on_brand_color}
+	const [feedbackTypeSelected, setFeedbackTypeSelected] = useState<FeedbackType | null>(null);
 
-        />
-      </TouchableOpacity>
+	const [feedbackSent, setFeedbackSent] = useState(false);
 
-      <BottomSheet 
-        ref={bottomSheetRef}
-        snapPoints={[1,280]}
-        backgroundStyle={styles.modal}
-        handleIndicatorStyle={styles.indicator}
-      >
-       <Success/>
-        
-      </BottomSheet>
-    </>
-  );
+	const bottomSheetRef = useRef <BottomSheet>(null);
+
+	function handleOpen(){
+		bottomSheetRef.current?.expand();
+	}
+
+	function handleRestartFeedback(){
+		setFeedbackSent(false);
+		setFeedbackTypeSelected(null);
+	}
+
+	function handleFeedbackSent(){
+		setFeedbackSent(true);
+	}
+
+	return (
+		<>
+		<TouchableOpacity 
+		style={styles.button}
+		onPress={handleOpen}
+		>
+			<ChatTeardropDots 
+			size={24} 
+			weight="bold" 
+			color={theme.colors.text_on_brand_color}
+			/>
+		</TouchableOpacity>
+
+		<BottomSheet 
+		ref={bottomSheetRef}
+		snapPoints={[1,280]}
+		backgroundStyle={styles.modal}
+		handleIndicatorStyle={styles.indicator}
+		>
+		{
+			feedbackSent?
+			<Success onSendAnotherFeedback={handleRestartFeedback}/>
+			:
+			<>
+			{
+				feedbackTypeSelected?
+				<Form 
+				onFeedbackSent={handleFeedbackSent}
+				onFeedbackCanceled={handleRestartFeedback}
+				feedbackType={feedbackTypeSelected}/>
+				:
+				<Options onFeedbackTypeChanged={setFeedbackTypeSelected}/>
+			}
+			</>
+		}
+			
+		</BottomSheet>
+		</>
+	);
 }
 
 export default gestureHandlerRootHOC(Widgets);
